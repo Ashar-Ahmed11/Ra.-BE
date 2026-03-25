@@ -18,6 +18,7 @@ app.use('/api/getdata', require('./routes/home'))
 app.use('/api/sendImg', require('./routes/cloudinary'))
 app.use('/api/products', require('./routes/products'))
 app.use('/api/basicInfo', require('./routes/basicInfo'))
+app.use('/api/orders', require('./routes/order'))
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

@@ -18,10 +18,10 @@ router.post('/', async (req, res) => {
     html: `<div style="background-color:white; padding:30px; font-family:Arial, sans-serif;">
       <div style="text-align:center;">
         <img 
-          src="https://memon-foods-spices.web.app/static/media/nukhbaLogo1.ae30d010a9995c47203f.png" 
-          alt="Memon Foods & Spices Logo"
+          src="https://fmh-jewellery.web.app/static/media/logo.2b4db27cb36d47c255ba.png" 
+          alt="FMH | Fareed Moti House"
           style="width:120px; height:auto; margin-bottom:20px;"
-        />
+        /> 
       </div>
       <h1 style="color:black; text-align:center;">Thanks For Shopping ${req.body.name}</h1>
       <h3 style="padding:10px; color:black; text-align:center;">
