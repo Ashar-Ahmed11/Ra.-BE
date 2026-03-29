@@ -6,15 +6,15 @@ router.post('/', async (req, res) => {
   const transport = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'memonfoodsandspices@gmail.com',
-      pass: 'ajikizflolrqazfw'
+      user: 'fareedmotihouse@gmail.com',
+      pass: 'oktedvriyoofinux'
     }
   });
 
   const mailOption = {
-    from: "memonfoodsandspices@gmail.com",
+    from: "fareedmotihouse@gmail.com",
     to: req.body.email,
-    subject: "Memon Foods & Spices Order Confirmation",
+    subject: "Fareed Moti House Order Confirmation",
     html: `<div style="background-color:white; padding:30px; font-family:Arial, sans-serif;">
       <div style="text-align:center;">
         <img 
@@ -61,7 +61,7 @@ router.post('/', async (req, res) => {
 
   <tr>
     <td style="border:1px solid black; padding:8px; text-align:left; color:black;">Email</td>
-    <td style="border:1px solid black; padding:8px; text-align:right; color:black;">${req.body.email}</td>
+    <td style="border:1px solid black; padding:8px; text-align:right; color:black;">${req.body.email === "yousufdangra27@gmail.com"? req.body.userEmail: req.body.email}</td>
   </tr>
 
   <tr>
