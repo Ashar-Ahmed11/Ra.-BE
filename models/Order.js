@@ -45,6 +45,9 @@ const orderSchema = new Schema({
     address: {
         type: 'String',
     },
+    screenShot: {
+        type: 'String',
+    },
   
     date:{
         type: 'Date',

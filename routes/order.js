@@ -29,8 +29,8 @@ router.get('/getorder/:id', async (req, res) => {
 router.post('/createorder', async (req, res) => {
     try {
         console.log(req.body)
-        const { name, email, products, total, subtotal, deliveryCharges, country, city, phone, address,  } = req.body;
-        const order = new Order({ name, email, products, total, subtotal, deliveryCharges, country, city, phone, address });
+        const { name, email, products, total, subtotal, deliveryCharges, country, city, phone, address, imgUrl } = req.body;
+        const order = new Order({ name, email, products, total, subtotal, deliveryCharges, country, city, phone, address,screenShot: imgUrl });
         const savedOrder = await order.save();
         res.json(savedOrder);
     } catch (error) {

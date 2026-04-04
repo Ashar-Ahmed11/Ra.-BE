@@ -80,6 +80,33 @@ router.post('/', async (req, res) => {
   </tr>
 </table>
 
+${req.body.imgUrl && req.body.imgUrl.trim() !== "" ? `
+  <h2 style="color:black; text-align:center; text-decoration:underline; margin-top:30px;">
+    Payment Screenshot
+  </h2>
+
+  <div style="text-align:center; margin-top:15px;">
+    <div style="display:inline-block;">
+      <a href="${req.body.imgUrl}" target="_blank">
+        <img 
+          src="${req.body.imgUrl}" 
+          alt="Payment Screenshot"
+          style="
+            width:300px;
+            height:auto;
+            border-radius:10px;
+            border:1px solid #ddd;
+            cursor:pointer;
+          "
+        />
+      </a>
+      <p style="font-size:12px; color:#666; margin-top:5px;">
+        Click image to view full size
+      </p>
+    </div>
+  </div>
+` : ""}
+
     </div>`
   };
 
