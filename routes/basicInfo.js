@@ -5,30 +5,30 @@ const Info = require('../models/basicInfo')
 const fetchAdmin = require('../middleware/fetchadmin')
 
 
-// router.post('/createInfo', async (req, res) => {
+router.post('/createInfo', async (req, res) => {
 
-//     try {
+    try {
 
-//         const admin = await Admin.findOne({ username: 'admin@memonfoodsandspices' })
+        const admin = await Admin.findOne({ username: 'admin@raisakbar.com' })
 
-//         const data = {
-//             user:admin._id,
-//             whatsAppNumber: "03352565869",
-//             karachiDelivery: 300,
-//             otherDelivery: 500,
+        const data = {
+            user:admin._id,
+            whatsAppNumber: "03352565869",
+            karachiDelivery: 300,
+            otherDelivery: 500,
 
-//         }
+        }
 
-//         const info = await Info.create(data)
-//         info.save()
-//         res.send(info)
+        const info = await Info.create(data)
+        info.save()
+        res.send(info)
 
 
-//     } catch (error) {
-//         console.error(error.message)
-//         return res.status(500).send("Some Internal Server Error")
-//     }
-// })
+    } catch (error) {
+        console.error(error.message)
+        return res.status(500).send("Some Internal Server Error")
+    }
+})
 
 
 router.get('/getInfo', async (req, res) => {

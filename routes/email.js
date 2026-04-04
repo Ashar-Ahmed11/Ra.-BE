@@ -80,32 +80,6 @@ router.post('/', async (req, res) => {
   </tr>
 </table>
 
-<h2 style="color:black; text-align:center; text-decoration:underline; margin-top:30px;">
-   Bank Details
-</h2>
-
-<table style="border:1px solid black; border-collapse:collapse; width:100%; margin-top:10px;">
-  <tr style="background-color:#f9f9f9;">
-    <th style="border:1px solid black; padding:8px; text-align:left; color:black;">Bank Info</th>
-    <th style="border:1px solid black; padding:8px; text-align:right; color:black;">Details</th>
-  </tr>
-  <tr>
-    <td style="border:1px solid black; padding:8px; text-align:left; color:black;">Bank Name</td>
-    <td style="border:1px solid black; padding:8px; text-align:right; color:black;">FAREED MOTI HOUSE</td>
-  </tr>
-  <tr>
-    <td style="border:1px solid black; padding:8px; text-align:left; color:black;">Account Number</td>
-    <td style="border:1px solid black; padding:8px; text-align:right; color:black;">01800113832707</td>
-  </tr>
-  <tr>
-    <td style="border:1px solid black; padding:8px; text-align:left; color:black;">IBN Number</td>
-    <td style="border:1px solid black; padding:8px; text-align:right; color:black;">PK77MEZN0001800113832707</td>
-  </tr>
-  <tr>
-    <td style="border:1px solid black; padding:8px; text-align:left; color:black;">Branch</td>
-    <td style="border:1px solid black; padding:8px; text-align:right; color:black;">BOMBAY BAZAR-KARACHI</td>
-  </tr>
-</table>
 
 
 ${req.body.imgUrl && req.body.imgUrl.trim() !== "" ? `

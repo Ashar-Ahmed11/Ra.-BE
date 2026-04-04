@@ -19,6 +19,7 @@ app.use('/api/sendImg', require('./routes/cloudinary'))
 app.use('/api/products', require('./routes/products'))
 app.use('/api/basicInfo', require('./routes/basicInfo'))
 app.use('/api/orders', require('./routes/order'))
+app.use('/api/checkout', require('./routes/checkout'))
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
