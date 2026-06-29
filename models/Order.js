@@ -18,6 +18,9 @@ const orderSchema = new Schema({
         },
         quantity: {
             type: Number
+        },
+        variantId:{
+            type: mongoose.Schema.Types.ObjectId
         }
     }],
 //    products: [{

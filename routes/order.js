@@ -30,7 +30,14 @@ router.post('/createorder', async (req, res) => {
     try {
         console.log(req.body)
         const { name, email, products, total, subtotal, deliveryCharges, country, city, phone, address, imgUrl } = req.body;
-        const order = new Order({ name, email, products, total, subtotal, deliveryCharges, country, city, phone, address,screenShot: imgUrl });
+        const orderProducts = Array.isArray(products)
+            ? products.map((item) => ({
+                product: item.product?._id || item.product,
+                quantity: item.quantity,
+                variantId: item.variantId || null
+            }))
+            : [];
+        const order = new Order({ name, email, products: orderProducts, total, subtotal, deliveryCharges, country, city, phone, address,screenShot: imgUrl });
         const savedOrder = await order.save();
         res.json(savedOrder);
     } catch (error) {
@@ -43,9 +50,16 @@ router.post('/createorder', async (req, res) => {
 router.put('/editorder/:id', async (req, res) => {
     try {
         const { name, email, products, total, subtotal, deliveryCharges, country, city, phone, address } = req.body;
+        const orderProducts = Array.isArray(products)
+            ? products.map((item) => ({
+                product: item.product?._id || item.product,
+                quantity: item.quantity,
+                variantId: item.variantId || null
+            }))
+            : [];
         const updatedOrder = await Order.findByIdAndUpdate(
             req.params.id,
-            { name, email, products, total, subtotal, deliveryCharges, country, city, phone, address },
+            { name, email, products: orderProducts, total, subtotal, deliveryCharges, country, city, phone, address },
             { new: true }
         );
         if (!updatedOrder) return res.status(404).json({ message: 'Order not found' });
