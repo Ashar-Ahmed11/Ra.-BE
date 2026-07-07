@@ -5,6 +5,78 @@ const Home = require('../models/home')
 const fetchAdmin = require('../middleware/fetchadmin')
 const Category = require('../models/category')
 
+const CLOUDINARY_CLOUD_NAME = 'nplofwvm'
+const CLOUDINARY_UPLOAD_PRESET = 'for_migration'
+const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`
+
+const CATEGORY_IMAGE_FIELDS = [
+    'mainCarousalImgDesktop',
+    'mainCarousalImgPhone'
+]
+
+const HOME_IMAGE_FIELDS = [
+    'mainCarousalImgDesktop',
+    'mainCarousalImgPhone',
+    'bodyImg',
+    'footerCarousalImgDesktop',
+    'footerCarousalImgPhone'
+]
+
+const isMigratedCloudinaryUrl = (url) => (
+    typeof url === 'string' && url.includes(`res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/`)
+)
+
+const uploadImageToCloudinary = async(imageUrl) => {
+    const formData = new FormData()
+    formData.append('file', imageUrl)
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+
+    const response = await fetch(CLOUDINARY_UPLOAD_URL, {
+        method: 'POST',
+        body: formData
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+        throw new Error(data.error?.message || 'Cloudinary upload failed')
+    }
+
+    return data.secure_url || data.url
+}
+
+const migrateImageFields = async(document, fields, type, summary) => {
+    let documentChanged = false
+
+    for (const field of fields) {
+        const currentUrl = document[field]
+
+        if (!currentUrl || isMigratedCloudinaryUrl(currentUrl)) {
+            summary.imagesSkipped++
+            continue
+        }
+
+        try {
+            document[field] = await uploadImageToCloudinary(`https://res.cloudinary.com/dextrzp2q/image/fetch/q_60/${currentUrl}`)
+            documentChanged = true
+            summary.imagesMigrated++
+        } catch (error) {
+            summary.imagesFailed++
+            summary.failures.push({
+                type,
+                documentId: document._id,
+                field,
+                url: currentUrl,
+                error: error.message
+            })
+        }
+    }
+
+    if (documentChanged) {
+        await document.save()
+        summary.documentsUpdated++
+    }
+}
 router.post('/createhome', async(req, res) => {
 
     try {
@@ -148,6 +220,45 @@ router.put('/edithome', fetchAdmin, async (req, res) => {
         return res.status(500).send("Some Internal Server Error")
     }
 })
+
+
+router.post('/migrate-cover-images', async(req, res) => {
+    const summary = {
+        homeDocumentsChecked: 0,
+        categoryDocumentsChecked: 0,
+        documentsUpdated: 0,
+        imagesMigrated: 0,
+        imagesSkipped: 0,
+        imagesFailed: 0,
+        failures: []
+    }
+
+    try {
+        const homeDocuments = await Home.find()
+        const categoryDocuments = await Category.find()
+
+        summary.homeDocumentsChecked = homeDocuments.length
+        summary.categoryDocumentsChecked = categoryDocuments.length
+
+        for (const homeDocument of homeDocuments) {
+            await migrateImageFields(homeDocument, HOME_IMAGE_FIELDS, 'home', summary)
+        }
+
+        for (const categoryDocument of categoryDocuments) {
+            await migrateImageFields(categoryDocument, CATEGORY_IMAGE_FIELDS, 'category', summary)
+        }
+
+        res.send(summary)
+    } catch (error) {
+        console.error(error.message)
+        return res.status(500).send({
+            message: 'Internal Server Error',
+            summary
+        })
+    }
+})
+
+
 router.put('/editcategory/:id', fetchAdmin, async (req, res) => {
 
     try {

@@ -2,6 +2,37 @@ const express = require('express')
 const router = express.Router()
 const Products = require('../models/product')
 
+const CLOUDINARY_CLOUD_NAME = 'nplofwvm'
+const CLOUDINARY_UPLOAD_PRESET = 'for_migration'
+const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`
+
+const isMigratedCloudinaryUrl = (url) => (
+  typeof url === 'string' && url.includes(`res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/`)
+)
+
+const uploadImageToCloudinary = async (imageUrl) => {
+  const formData = new FormData()
+  formData.append('file', imageUrl)
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+  console.log('fetch request started');
+  
+  const response = await fetch(CLOUDINARY_UPLOAD_URL, {
+    method: 'POST',
+    body: formData
+  })
+  console.log('fetch request finished');
+  
+  const data = await response.json()
+  console.log(data);
+  
+
+  if (!response.ok) {
+    throw new Error(data.error?.message || 'Cloudinary upload failed')
+  }
+
+  return data.secure_url || data.url
+}
+
 //COMMERCEJS TO MONGO CONVERTER!
 // router.post('/createproduct', async (req, res) => {
 //   const products = [
@@ -131,6 +162,73 @@ router.get('/singleproduct/:id', async (req, res) => {
   } catch (error) {
     console.error(error.message)
     res.status(500).send('Some Internal Server Error')
+  }
+})
+
+
+
+router.post('/migrate-images', async (req, res) => {
+  const summary = {
+    productsChecked: 0,
+    productsUpdated: 0,
+    imagesMigrated: 0,
+    imagesSkipped: 0,
+    imagesFailed: 0,
+    failures: []
+  }
+
+  try {
+    const products = await Products.find()
+    summary.productsChecked = products.length
+    let productCount = 0
+    for (const product of products) {
+      productCount++
+      console.log(productCount)
+      let productChanged = false
+      const assets = Array.isArray(product.assets) ? product.assets : []
+
+      for (let index = 0; index < assets.length; index++) {
+        const asset = assets[index]
+        const currentUrl = asset && asset.url
+
+        if (!currentUrl || isMigratedCloudinaryUrl(currentUrl)) {
+          summary.imagesSkipped++
+          continue
+        }
+
+        try {
+          console.log('started');
+          
+          const cloudinaryUrl = await uploadImageToCloudinary(`https://res.cloudinary.com/dextrzp2q/image/fetch/q_60/w_1000/h_1000/${currentUrl}`)
+          console.log(cloudinaryUrl)
+          assets[index].url = cloudinaryUrl
+          productChanged = true
+          summary.imagesMigrated++
+        } catch (error) {
+          summary.imagesFailed++
+          summary.failures.push({
+            productId: product._id,
+            assetIndex: index,
+            url: currentUrl,
+            error: error.message
+          })
+        }
+      }
+
+      if (productChanged) {
+        product.markModified('assets')
+        await product.save()
+        summary.productsUpdated++
+      }
+    }
+
+    res.send(summary)
+  } catch (error) {
+    console.error(error.message)
+    res.status(500).send({
+      message: 'Internal Server Error',
+      summary
+    })
   }
 })
 
