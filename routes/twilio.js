@@ -61,14 +61,14 @@ router.post('/', async (req, res) => {
 //           const myimage = toBase64('helloworl2.png')
 //           const withPrefix = 'data:image/png;base64,' + myimage
 
-//         const url = "https://api.cloudinary.com/v1_1/dextrzp2q/image/upload"
+//         const url = "https://api.cloudinary.com/v1_1/nplofwvm/image/upload"
 
 //         // https://faithful-bass-yoke.cyclic.app/api/sendImg/
     
 //         const formData = new FormData()
     
 //         formData.append('file', withPrefix)
-//         formData.append('upload_preset', 'dga8po59')
+//         formData.append('upload_preset', 'for_migration')
     
 //         const response = await fetch(url, {
 //           method: 'post', // *GET, POST, PUT, DELETE, etc.
