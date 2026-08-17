@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
     subject: "Fareed Moti House Order Confirmation",
     html: `<div style="background-color:white; padding:30px; font-family:Arial, sans-serif;">
       <div style="text-align:center;">
-        <img 
+        <img loading="lazy" 
           src="https://fmh-jewellery.web.app/static/media/logo.2b4db27cb36d47c255ba.png" 
           alt="FMH | Fareed Moti House"
           style="width:120px; height:auto; margin-bottom:20px;"
@@ -90,7 +90,7 @@ ${req.body.imgUrl && req.body.imgUrl.trim() !== "" ? `
   <div style="text-align:center; margin-top:15px;">
     <div style="display:inline-block;">
       <a href="${req.body.imgUrl}" target="_blank">
-        <img 
+        <img loading="lazy" 
           src="${req.body.imgUrl}" 
           alt="Payment Screenshot"
           style="

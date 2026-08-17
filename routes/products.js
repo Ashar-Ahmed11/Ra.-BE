@@ -2,7 +2,9 @@ const express = require('express')
 const router = express.Router()
 const Products = require('../models/product')
 
-const CLOUDINARY_CLOUD_NAME = 'nplofwvm'
+// const CLOUDINARY_CLOUD_NAME = 'mtces9mu'
+const CLOUDINARY_CLOUD_NAME = 'mtces9mu'
+
 const CLOUDINARY_UPLOAD_PRESET = 'for_migration'
 const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`
 
@@ -199,7 +201,7 @@ router.post('/migrate-images', async (req, res) => {
         try {
           console.log('started');
           
-          const cloudinaryUrl = await uploadImageToCloudinary(`https://res.cloudinary.com/nplofwvm/image/fetch/q_60/w_1000/h_1000/${currentUrl}`)
+          const cloudinaryUrl = await uploadImageToCloudinary(`https://res.cloudinary.com/mtces9mu/image/fetch/q_60/w_1000/h_1000/${currentUrl}`)
           console.log(cloudinaryUrl)
           assets[index].url = cloudinaryUrl
           productChanged = true
