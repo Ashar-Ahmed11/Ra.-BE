@@ -27,6 +27,12 @@ const productsSchema = new Schema({
     description:{
         type:'String'
     },
+    metaTitle:{
+        type:'String'
+    },
+    metaDescription:{
+        type:'String'
+    },
     assets:[
             {url:{
                 type:'String'

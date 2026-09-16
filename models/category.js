@@ -9,6 +9,15 @@ const categorySchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'admin'
     },
+    metaTitle:{
+        type:String
+    },
+    metaDescription:{
+        type:String
+    },
+    slug:{
+        type:String
+    },
     mainCarousalImgDesktop: {
         type: 'String',
 

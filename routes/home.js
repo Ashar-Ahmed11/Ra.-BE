@@ -27,6 +27,13 @@ const isMigratedCloudinaryUrl = (url) => (
     typeof url === 'string' && url.includes(`res.cloudinary.com/${CLOUDINARY_CLOUD_NAME}/`)
 )
 
+const createSlug = (value = '') => value
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
 const uploadImageToCloudinary = async(imageUrl) => {
     const formData = new FormData()
     formData.append('file', imageUrl)
@@ -127,6 +134,7 @@ router.post('/createcategory', async (req, res) => {
             mainCarousalImgDesktop: 'https://res.cloudinary.com/mtces9mu/image/upload/v1767213381/b7jwkdkux1dhiytkqhuh.jpg',
             mainCarousalImgPhone: 'https://res.cloudinary.com/mtces9mu/image/upload/v1767213394/hknpzfukkaxnueyyqair.jpg',
             mainHeading: req.body.mainHeading,
+            slug: createSlug(req.body.mainHeading),
             firstHeading: req.body.mainHeading,
             firstSmallPara: "The best addition to any kitchen is high-quality spices. For those who value authentic taste and rich aroma, premium spices are an essential choice. There is a reason why carefully sourced spices are trusted worldwide; they are considered a symbol of purity, freshness, and superior quality.",
 
@@ -163,6 +171,25 @@ router.get('/gethome', async (req, res) => {
 router.get('/getcategory/:id', async (req, res) => {
     const home = await Category.findById(req.params.id)
     res.send(home)
+})
+router.get('/getcategorybyslug/:slug', async (req, res) => {
+    try {
+        let category = await Category.findOne({ slug: req.params.slug })
+
+        // Supports legacy ID-based category URLs while existing links transition to slugs.
+        if (!category && /^[a-f\d]{24}$/i.test(req.params.slug)) {
+            category = await Category.findById(req.params.slug)
+        }
+
+        if (!category) {
+            return res.status(404).send('Category not found')
+        }
+
+        res.send(category)
+    } catch (error) {
+        console.error(error.message)
+        res.status(500).send('Internal Server Error')
+    }
 })
 router.get('/getcategories', async (req, res) => {
     const home = await Category.find()
@@ -219,6 +246,21 @@ router.put('/edithome', fetchAdmin, async (req, res) => {
     } catch (error) {
         console.error(error.message)
         return res.status(500).send("Some Internal Server Error")
+    }
+})
+
+router.put('/generate-category-slugs', fetchAdmin, async (req, res) => {
+    try {
+        const categories = await Category.find()
+
+        await Promise.all(categories.map((category) => (
+            Category.findByIdAndUpdate(category._id, { $set: { slug: createSlug(category.mainHeading) } })
+        )))
+
+        res.send(await Category.find())
+    } catch (error) {
+        console.error(error.message)
+        res.status(500).send('Internal Server Error')
     }
 })
 
@@ -280,6 +322,9 @@ router.put('/editcategory/:id', fetchAdmin, async (req, res) => {
         if (req.body.secondSmallPara) { newComponent.secondSmallPara = req.body.secondSmallPara }
         if (req.body.secondSmallParaTwo) { newComponent.secondSmallParaTwo = req.body.secondSmallParaTwo }
         if (req.body.secondSmallParaThree) { newComponent.secondSmallParaThree = req.body.secondSmallParaThree }
+        if (req.body.metaTitle !== undefined) { newComponent.metaTitle = req.body.metaTitle }
+        if (req.body.metaDescription !== undefined) { newComponent.metaDescription = req.body.metaDescription }
+        if (req.body.slug !== undefined) { newComponent.slug = createSlug(req.body.slug) }
 
 
         const note = await Category.findByIdAndUpdate(req.params.id, { $set: newComponent }, { new: true })
